@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quote Search Filter</title>
+</head>
+<body>
+  <input type="text" id="searchInput" placeholder="Enter search query">
+  <ul id="quoteList"></ul>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const quoteList = document.getElementById('quoteList');
+
+    const fetchQuotes = async () => {
+      try {
+        const response = await fetch('https://dummyjson.com/quotes');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error fetching quotes:', error);
+        return [];
+      }
+    };
+
+    const displayQuotes = (quotes) => {
+      quoteList.innerHTML = '';
+
+      if (quotes.length === 0) {
+        quoteList.innerHTML = '<li>No quotes found</li>';
+        return;
+      }
+
+      quotes.forEach((quote) => {
+        const li = document.createElement('li');
+        li.textContent = quote.text;
+        quoteList.appendChild(li);
+      });
+    };
+
+    const filterQuotes = (quotes, query) => {
+      const filteredQuotes = quotes.filter((quote) => {
+        return quote.text.toLowerCase().includes(query.toLowerCase());
+      });
+      displayQuotes(filteredQuotes);
+    };
+
+    const initializeApp = async () => {
+      const quotes = await fetchQuotes();
+      displayQuotes(quotes);
+
+      searchInput.addEventListener('input', (event) => {
+        const query = event.target.value;
+        filterQuotes(quotes, query);
+      });
+    };
+
+    initializeApp();
+  </script>
+</body>
+</html>
